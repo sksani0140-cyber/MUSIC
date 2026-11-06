@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "808112712022",
+    "project_id": "music-8361a",
+    "storage_bucket": "music-8361a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:808112712022:android:4d3eff16493c531b948ef7",
+        "android_client_info": {
+          "package_name": "com.music.privatechat"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD0BuheJw_uY1YCKe-Y3z_eIHWZ_HauuPE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
