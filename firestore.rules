@@ -1,0 +1,27 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function isPairMember(pairId) {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/pairs/$(pairId)) &&
+        (get(/databases/$(database)/documents/pairs/$(pairId)).data.adminUid == request.auth.uid ||
+         get(/databases/$(database)/documents/pairs/$(pairId)).data.memberUid == request.auth.uid);
+    }
+    match /pairs/{pairId} {
+      allow read: if isPairMember(pairId);
+      allow write: if false; // Pair records are created only by trusted Cloud Functions.
+      match /messages/{messageId} {
+        allow read: if isPairMember(pairId);
+        allow create: if isPairMember(pairId)
+          && request.resource.data.keys().hasOnly(['sender','text','sentAt'])
+          && request.resource.data.sender == request.auth.uid
+          && request.resource.data.text is string
+          && request.resource.data.text.size() > 0
+          && request.resource.data.text.size() <= 4000;
+        allow update, delete: if false;
+      }
+    }
+    match /pairCodes/{codeHash} { allow read, write: if false; }
+  }
+}
