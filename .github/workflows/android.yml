@@ -1,8 +1,8 @@
-name: Build MUSIC APK
+name: Build Android APK
 
 on:
   push:
-    branches: [main]
+    branches: [ "main" ]
   workflow_dispatch:
 
 jobs:
@@ -10,22 +10,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
-      - name: Setup Java
-        uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+    - name: Set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+        cache: gradle
 
-      - name: Build APK
-        run: |
-          chmod +x gradlew
-          ./gradlew assembleDebug
+    - name: Fix Wrapper Location & Permissions
+      run: |
+        mkdir -p gradle/wrapper
+        if [ -f gradle-wrapper.jar ]; then mv gradle-wrapper.jar gradle/wrapper/; fi
+        if [ -f gradle-wrapper.properties ]; then mv gradle-wrapper.properties gradle/wrapper/; fi
+        chmod +x gradlew
 
-      - name: Upload APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: MUSIC-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+    - name: Build Debug APK
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: Upload APK
+      uses: actions/upload-artifact@v4
+      with:
+        name: app-debug
+        path: app/build/outputs/apk/debug/*.apk
